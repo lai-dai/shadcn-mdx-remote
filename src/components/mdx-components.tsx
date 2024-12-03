@@ -4,6 +4,7 @@ import { type MDXComponents } from "mdx/types"
 import Image from "next/image"
 import Link from "next/link"
 import { MDXRemote, type MDXRemoteSerializeResult } from "next-mdx-remote"
+import {BuyMeACoffee} from "~/components/buy-me-a-coffee"
 import { Callout } from "~/components/callout"
 import { ComponentPreview } from "~/components/component-preview"
 import { CopyButton } from "~/components/copy-button"
@@ -238,6 +239,7 @@ const components: MDXComponents = {
   ComponentPreview,
   Image,
   Callout,
+  BuyMeACoffee,
 }
 
 interface MdxProps {

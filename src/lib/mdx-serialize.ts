@@ -1,10 +1,12 @@
 import { serialize } from "next-mdx-remote/serialize"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
+import rehypeMathjax from 'rehype-mathjax'
 import rehypePrettyCode, {
   type Options as RehypePrettyCodeOptions,
 } from "rehype-pretty-code"
 import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
+import remarkMath from 'remark-math'
 import { visit } from "unist-util-visit"
 import { rehypeComponent } from "~/lib/rehype-component"
 
@@ -19,9 +21,10 @@ export async function mdxSerialize(source: string) {
       // MDX's available options, see the MDX docs for more info.
       // https://mdxjs.com/packages/mdx/#compilefile-options
       mdxOptions: {
-        remarkPlugins: [remarkGfm],
+        remarkPlugins: [remarkGfm, remarkMath],
         rehypePlugins: [
           rehypeSlug,
+          rehypeMathjax,
           rehypeComponent,
           () => tree => {
             visit(tree, node => {

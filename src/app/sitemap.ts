@@ -1,6 +1,6 @@
 import { type MetadataRoute } from "next"
 import { siteConfig } from "~/config/site"
-import { GetAllPosts } from "~/lib/docs"
+import { GetAllPosts } from "~/lib/content"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date().toISOString().split("T")[0]

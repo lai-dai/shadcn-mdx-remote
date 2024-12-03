@@ -1,3 +1,5 @@
+import "~/styles/mdx.css"
+
 import { AppSidebar } from "~/components/app-sidebar"
 import { SiteFooter } from "~/components/site-footer"
 import { SiteHeader } from "~/components/site-header"

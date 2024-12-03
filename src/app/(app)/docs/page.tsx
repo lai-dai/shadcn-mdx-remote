@@ -1,17 +1,18 @@
 import Link from "next/link"
-import { GetAllPosts } from "~/lib/docs"
+import { getContents } from "~/lib/content"
 
 export default function PostPage() {
-  const posts = GetAllPosts()
+  const docs = getContents('docs')
+
   return (
     <div className={"mx-auto py-6"}>
       <div className={"flex flex-col gap-3"}>
-        {posts.map((post, key) => (
+        {docs.map((doc, key) => (
           <Link
             className={"hover:underline"}
-            href={`/posts/${post.slug}`}
+            href={`/posts/${doc.slug}`}
             key={key}>
-            {post.data.title}
+            {doc.metadata.title}
           </Link>
         ))}
       </div>

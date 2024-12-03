@@ -1,6 +1,7 @@
 import "~/styles/globals.css"
 
 import { type Viewport, type Metadata } from "next"
+import Script from "next/script"
 import { ThemeProvider } from "next-themes"
 import { META_THEME_COLORS, siteConfig } from "~/config/site"
 import { fontMono, fontSans } from "~/lib/fonts"
@@ -81,18 +82,19 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className={cn(fontSans.variable, fontMono.variable)}
       lang={"vi"}
       suppressHydrationWarning={true}>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                if (localStorage.theme === 'dark' || ((!('theme' in localStorage) || localStorage.theme === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
-                }
-              } catch (_) {}
-            `,
-          }}/>
-      </head>
+      <Script id={"theme"}>
+        {`
+try {
+  if (
+    localStorage.theme === 'dark'
+    || ((!('theme' in localStorage) || localStorage.theme === 'system')
+      && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', '${META_THEME_COLORS.dark}')
+  }
+} catch (_) {}
+        `}
+      </Script>
 
       <body className={"min-h-screen bg-background font-sans antialiased"}>
         <ThemeProvider

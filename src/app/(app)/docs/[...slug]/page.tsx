@@ -2,10 +2,10 @@ import { type Metadata } from "next"
 import { notFound } from "next/navigation"
 import { Mdx } from "~/components/mdx-components"
 import { DashboardTableOfContents } from "~/components/toc"
-import { siteConfig } from "~/config/site"
-import { GetAllPostSlugs, GetPostBySlug } from "~/lib/docs"
+import { getContents } from "~/lib/content"
 import { mdxSerialize } from "~/lib/mdx-serialize"
 import { getTableOfContents } from "~/lib/toc"
+import { absoluteUrl } from "~/utils/url"
 
 interface PostPageProps {
   params: Promise<{
@@ -13,36 +13,39 @@ interface PostPageProps {
   }>
 }
 
-export async function generateStaticParams() {
-  const slugs = GetAllPostSlugs()
-  return slugs.map(slug => ({ params: { slug } }))
+export function generateStaticParams() {
+  const docs = getContents("docs")
+  return docs.map(doc => ({ params: { slug: doc.slug.toLowerCase() } }))
 }
 
 export async function generateMetadata({
   params,
 }: PostPageProps): Promise<Metadata> {
   const { slug } = await params
-  const post = GetPostBySlug(slug[0]!)
-  const description = post.content
-    .replace(/<\/?[^>]+(>|$)/g, "")
-    .replace(/\n/g, " ")
-    .replace(/\s\s+/g, " ")
-    .slice(0, 150)
+  const doc = getContents("docs").find(
+    project => project.slug.toLowerCase() === slug[0]?.toLowerCase(),
+  )
+
+  if (!doc) {
+    return {}
+  }
+
+  const { title, summary: description, image } = doc.metadata
+  const ogImage = image
+    ? absoluteUrl(image)
+    : absoluteUrl(`/api/og?title=${title}`)
 
   return {
-    title: post.data.title,
-    description: description,
+    title,
+    description,
     openGraph: {
-      title: post.data.title,
-      description: description,
-      url: `${siteConfig.url}/${slug[0]}`,
+      title,
+      description,
+      url: absoluteUrl(`/${slug[0]}`),
       siteName: "Next.js with next-mdx-remote Blog",
       images: [
         {
-          url: `/post/${slug[0]}/${slug[0]}.webp`,
-          width: 1200,
-          height: 630,
-          alt: "Next.js with next-mdx-remote Blog",
+          url: ogImage,
         },
       ],
       locale: "vi_VN",
@@ -50,9 +53,9 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: post.data.title,
-      description: description,
-      images: [`${siteConfig.url}/post/${slug[0]}/${slug[0]}.webp`],
+      title,
+      description,
+      images: [ogImage],
     },
   }
 }
@@ -60,15 +63,17 @@ export async function generateMetadata({
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params
 
-  if (!slug.length) {
+  const doc = getContents("docs").find(
+    project => project.slug.toLowerCase() === slug[0]?.toLowerCase(),
+  )
+
+  if (!slug.length || !doc) {
     notFound()
   }
 
-  const { content } = GetPostBySlug(slug[0]!)
-
   const [mdxSource, toc] = await Promise.all([
-    mdxSerialize(content),
-    getTableOfContents(content),
+    mdxSerialize(doc.content),
+    getTableOfContents(doc.content),
   ])
 
   return (

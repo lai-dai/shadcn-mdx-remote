@@ -4,6 +4,6 @@ export type Metadata = {
   title: string
   summary: string
   publish: string
-  lastUpdate?: string
+  lastUpdate: string
   image?: string
 }

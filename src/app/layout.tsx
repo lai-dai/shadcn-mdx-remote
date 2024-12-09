@@ -1,11 +1,24 @@
 import "~/styles/globals.css"
 
+import { CircleAlert, CircleCheck, CircleX, Info, Loader } from "lucide-react"
 import { type Viewport, type Metadata } from "next"
+import localFont from "next/font/local"
 import Script from "next/script"
 import { ThemeProvider } from "next-themes"
+import { Toaster } from "~/components/ui/sonner"
 import { META_THEME_COLORS, siteConfig } from "~/config/site"
-import { fontMono, fontSans } from "~/lib/fonts"
 import { cn } from "~/lib/utils"
+
+const geistSans = localFont({
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+})
+const geistMono = localFont({
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+})
 
 export const metadata: Metadata = {
   title: {
@@ -22,7 +35,7 @@ export const metadata: Metadata = {
     "Shadcn UI",
     "T3 App",
     "Next Mdx remote",
-    "Next.js MDX Blog"
+    "Next.js MDX Blog",
   ],
   authors: [
     {
@@ -79,7 +92,6 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
-      className={cn(fontSans.variable, fontMono.variable)}
       lang={"vi"}
       suppressHydrationWarning={true}>
       <Script id={"theme"}>
@@ -96,7 +108,12 @@ try {
         `}
       </Script>
 
-      <body className={"min-h-screen bg-background font-sans antialiased"}>
+      <body
+        className={cn(
+          "font-sans antialiased",
+          geistSans.variable,
+          geistMono.variable,
+        )}>
         <ThemeProvider
           attribute={"class"}
           defaultTheme={"dark"}
@@ -107,6 +124,15 @@ try {
             vaul-drawer-wrapper={""}>
             {children}
           </div>
+
+          <Toaster
+            icons={{
+              error: <CircleX className={"text-error size-4"} />,
+              info: <Info className={"text-info size-4"} />,
+              loading: <Loader className={"size-4 animate-spin"} />,
+              success: <CircleCheck className={"text-success size-4"} />,
+              warning: <CircleAlert className={"text-warning size-4"} />,
+            }}/>
         </ThemeProvider>
       </body>
     </html>
